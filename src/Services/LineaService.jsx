@@ -1,8 +1,9 @@
 import axios from "axios";
 import { API_URL } from "../App.config";
 
-export async function obtenerLineas(consulta, page, pageSize) {
-  const urlBase = API_URL + "/lineasPageQuery";
+// Obtener una lista paginada de servicios
+export async function obtenerServicios(consulta, page, pageSize) {
+  const urlBase = API_URL + "/serviciosPageQuery";
   try {
     const { data } = await axios({
       method: "GET",
@@ -10,76 +11,60 @@ export async function obtenerLineas(consulta, page, pageSize) {
     });
     return data;
   } catch (error) {
-    console.error("Error buscando lineas:", error);
+    console.error("Error al buscar servicios", error);
     throw error;
   }
 }
 
-export async function obtenerLineas2() {
+// Obtener un servicio por su ID
+export async function obtenerServicio(id) {
   try {
     const { data } = await axios({
       method: "GET",
-      url: `${API_URL}/lineas`,
+      url: `${API_URL}/servicio/${id}`,
     });
     return data;
   } catch (error) {
-    console.error("Error buscando lineas:", error);
+    console.error("Error al buscar un servicio", error);
     throw error;
   }
 }
 
-export async function obtenerLinea(id) {
+// Crear o actualizar un servicio
+export async function crearServicio(servicio) {
   try {
-    // `${urlBase}/${id}`
-    const { data } = await axios({
-      method: "GET",
-      url: `${API_URL}/linea/${id}`,
-    });
-    console.log(data);
-    return data;
-  } catch (error) {
-    console.error("Error en buscar una linea:", error);
-    throw error;
-  }
-}
-
-export async function newLinea(linea) {
-  try {
-    if (linea.id > 0) {
+    if (servicio.id > 0) {
       const { data } = await axios({
         method: "PUT",
-        url: `${API_URL}/linea/${linea.id}`,
-        data: linea,
+        url: `${API_URL}/servicios/${servicio.id}`,
+        data: servicio,
       });
+      return data;
     } else {
       const { data } = await axios({
         method: "POST",
-        url: `${API_URL}/linea`,
-        data: linea,
+        url: `${API_URL}/servicios`,
+        data: servicio,
       });
+      return data;
     }
-
-    return data;
-  } catch (e) {
-    //  console.error(e);
-    // if (e.response && e.response.status === 400) {
-    //     //setMensaje('Error: Los datos proporcionados son inválidos');
-    //     alert('Error: Los datos proporcionados son inválidos');
-    // }
-    // else {
-    //     alert(e.response);
-    //     alert(e.response.status);
-    //     // setMensaje('Error al conectarse con el servidor');
-    // }
-    return null;
+  } catch (error) {
+    console.error("Error al guardar el servicio", error);
+    throw error;
   }
 }
 
-export async function eliminarLineas(id) {
-  const urlBase = API_URL + "/lineaEliminar";
-  const { data } = await axios({
-    method: "PUT",
-    url: `${urlBase}/${id}`,
-  });
-  return true;
+// Eliminar un servicio
+export async function eliminarServicio(id) {
+  const urlBase = API_URL + "/servicioEliminar";
+  try {
+    const { data } = await axios({
+      method: "PUT",
+      url: `${urlBase}/${id}`,
+    });
+    return data;
+  } catch (error) {
+    console.error("Error al eliminar el servicio", error);
+    throw error;
+  }
 }

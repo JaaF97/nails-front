@@ -247,7 +247,7 @@ export default function Servicio({ title }) {
               <th>Acciones</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="text-center">
             {servicios.map((servicio, index) => (
               <tr key={index}>
                 <td>
@@ -270,6 +270,7 @@ export default function Servicio({ title }) {
                   )}
                 </td>
                 <td>
+                  <span className="dollar-sign"> $ </span>
                   <input
                     type="text"
                     name="precio"

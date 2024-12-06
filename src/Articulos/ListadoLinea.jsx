@@ -12,35 +12,37 @@ export default function ListadoLinea() {
   const { lineas, setLineas } = useContext(LineaContext);
 
   const [consulta, setConsulta] = useState("");
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(ITEMS_PER_PAGE);
-  const [totalPages, setTotalPages] = useState(0);
+
+  const [pagina, setPagina] = useState(0);
+  const [tamañoPagina, setTamañoPagina] = useState(ITEMS_PER_PAGE);
+  const [cantidadPaginas, setCantidadPaginas] = useState(0);
+
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",
-  }); //se utiliza para el orden
+  }); // Se utiliza para el orden
 
   useEffect(() => {
-    getDatos();
-  }, [page, pageSize, consulta]);
+    cargarLineas();
+  }, [pagina, tamañoPagina, consulta]);
 
-  const handlePageChange = (newPage) => {
-    setPage(newPage);
+  const cambiarPagina = (newPage) => {
+    setPagina(newPage);
   };
 
-  const getDatos = async () => {
-    console.log("carga " + page);
-    obtenerLineas(consulta, page, pageSize)
+  const cargarLineas = async () => {
+    //console.log("carga " + pagina);
+    obtenerLineasPorPagina(consulta, pagina, tamañoPagina)
       .then((response) => {
         setLineas(response.content);
-        setTotalPages(response.totalPages);
+        setCantidadPaginas(response.totalPages);
       })
       .catch((error) => {
-        console.error("Error fetching items:", error);
+        console.error("Error al obtener lineas", error);
       });
   };
 
-  const handConsultaChange = (e) => {
+  const cambiarConsulta = (e) => {
     setConsulta(e.target.value);
   };
 
@@ -58,7 +60,7 @@ export default function ListadoLinea() {
   };
 
   ///////////////////////////////////////Para el orden de las tablas///////////////////////////////////////////////////
-  const handleSort = (key) => {
+  const filtrarPorAtributo = (key) => {
     let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
       direction = "descending";
@@ -66,7 +68,7 @@ export default function ListadoLinea() {
     setSortConfig({ key, direction });
   };
 
-  const sortedData = () => {
+  const lineasFiltradas = () => {
     const sorted = [...lineas];
     if (sortConfig.key !== null) {
       sorted.sort((a, b) => {
@@ -100,12 +102,12 @@ export default function ListadoLinea() {
             type="search"
             aria-label="Search"
             value={consulta}
-            onChange={handConsultaChange}
+            onChange={cambiarConsulta}
           ></input>
         </div>
         <div className="col-1">
           <button
-            onClick={() => getDatos()}
+            onClick={() => cargarLineas()}
             className="btn btn-outline-success"
             type="submit"
           >
@@ -117,7 +119,7 @@ export default function ListadoLinea() {
       <table className="table table-striped table-hover align-middle">
         <thead className="table-dark text-center">
           <tr>
-            <th scope="col" onClick={() => handleSort("id")}>
+            <th scope="col" onClick={() => filtrarPorAtributo("id")}>
               #
               {sortConfig.key === "id" && (
                 <span>
@@ -125,7 +127,7 @@ export default function ListadoLinea() {
                 </span>
               )}
             </th>
-            <th scope="col" onClick={() => handleSort("denominacion")}>
+            <th scope="col" onClick={() => filtrarPorAtributo("denominacion")}>
               Denominación
               {sortConfig.key === "denominacion" && (
                 <span>
@@ -139,8 +141,8 @@ export default function ListadoLinea() {
         </thead>
         <tbody>
           {
-            //iteramos empleados
-            sortedData().map((linea, indice) => (
+            // Iteramos lineasFiltradas para mostrarlas en la tabla
+            lineasFiltradas().map((linea, indice) => (
               <tr key={indice}>
                 <th scope="row">{linea.id}</th>
                 <td>{linea.denominacion}</td>
@@ -193,18 +195,20 @@ export default function ListadoLinea() {
       {/* /////////////////////// Esto se utiliza para hacer la paginacion  ///////////////////////////////// */}
 
       <div className="pagination d-md-flex justify-content-md-end">
-        {Array.from({ length: totalPages }, (_, i) => i).map((pageNumber) => (
-          <a
-            key={pageNumber}
-            href="#"
-            onClick={(e) => {
-              e.preventDefault(); // Previene el comportamiento predeterminado del enlace
-              handlePageChange(pageNumber);
-            }}
-          >
-            | {pageNumber} |
-          </a>
-        ))}
+        {Array.from({ length: cantidadPaginas }, (_, i) => i).map(
+          (pageNumber) => (
+            <a
+              key={pageNumber}
+              href="#"
+              onClick={(e) => {
+                e.preventDefault(); // Previene el comportamiento predeterminado del enlace
+                cambiarPagina(pageNumber);
+              }}
+            >
+              | {pageNumber} |
+            </a>
+          )
+        )}
       </div>
 
       {/* /////////////////////// fin de la paginacion  ///////////////////////////////// */}

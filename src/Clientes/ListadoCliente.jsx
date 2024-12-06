@@ -117,7 +117,7 @@ export default function ListadoCliente() {
       </div>
       <hr></hr>
       <table className="table table-striped table-hover align-middle">
-        <thead className="table-dark">
+        <thead className="table-dark text-center">
           <tr>
             <th scope="col" onClick={() => filtrarClientes("id")}>
               #
@@ -154,7 +154,7 @@ export default function ListadoCliente() {
             <th scope="col">Acciones</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-center">
           {
             // Iteramos clientesFIltrados para mostrarlos en la tabla
             clientesFiltrados().map((cliente, indice) => (

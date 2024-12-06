@@ -172,11 +172,19 @@ export default function ListadoServicio() {
                     </span>
                   )}
                 </th>
+                <th scope="col" onClick={() => filtrarPorAtributo("total")}>
+                  Total
+                  {sortConfig.key === "total" && (
+                    <span>
+                      {sortConfig.direction === "ascending" ? " 🔽" : " 🔼"}
+                    </span>
+                  )}
+                </th>
                 <th scope="col">Acciones</th>
               </tr>
             </thead>
-            <tbody>
-              {sortedData().map((servicio, indice) => (
+            <tbody className="text-center">
+              {serviciosFiltrados().map((servicio, indice) => (
                 <tr key={indice}>
                   <th scope="row">{servicio.id}</th>
                   <td>{servicio.clienteRazonSocial}</td>

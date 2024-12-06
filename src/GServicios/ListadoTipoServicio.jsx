@@ -153,8 +153,10 @@ export default function ListadoTipoServicio() {
             // Iteramos tipoServiciosFiltrados para mostrarlos en la tabla
             tipoServiciosFiltrados().map((tipoServicio, indice) => (
               <tr key={indice}>
-                <th scope="row">{tipoServicio.id}</th>
-                <td>{tipoServicio.denominacion}</td>
+                <th scope="row" className="text-center">
+                  {tipoServicio.id}
+                </th>
+                <td className="text-center">{tipoServicio.denominacion}</td>
 
                 <td className="text-center">
                   <div>

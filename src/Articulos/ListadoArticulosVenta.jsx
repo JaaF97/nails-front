@@ -119,7 +119,7 @@ export default function ListadoArticulosVenta() {
       </div>
       <hr></hr>
       <table className="table table-striped table-hover align-middle">
-        <thead className="table-dark">
+        <thead className="table-dark text-center">
           <tr>
             <th scope="col" onClick={() => filtrarPorAtributo("id")}>
               #
@@ -141,7 +141,7 @@ export default function ListadoArticulosVenta() {
             <th scope="col">Acciones</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-center">
           {
             // Iteramos articulosFiltrados para mostrarlos en la tabla
             articulosFiltrados().map((articulo, indice) => (

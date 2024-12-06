@@ -6,7 +6,7 @@ import {
   obtenerArticulosVenta,
   eliminarArticulosVenta,
 } from "../Services/ArticuloVentaService";
-import { ArticuloVentaContext } from "./ArticuloVentaContext";
+import { ArticuloVentaContext } from "../Context/ArticuloVentaContext";
 
 export default function ListadoArticulosVenta() {
   const { articulos, setArticulos } = useContext(ArticuloVentaContext);

@@ -1,71 +1,89 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IMAGEN_EDIT, IMAGEN_DELETE, ITEMS_PER_PAGE } from "../App.config";
-import { ServicioContext } from "./ServicioContext";
+import { ServicioContext } from "../Context/ServicioContext";
 import {
   eliminarServicio,
   obtenerServicios,
 } from "../Services/ServicioService";
+import useFormatPrice from "../hooks/useFormatPrice";
+import useFormatDate from "../hooks/useFormatDate";
 
 export default function ListadoServicio() {
   const { servicios, setServicios } = useContext(ServicioContext);
+  const formatearPrecio = useFormatPrice();
+  const formatearFecha = useFormatDate();
+
   const [consulta, setConsulta] = useState("");
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(ITEMS_PER_PAGE);
-  const [totalPages, setTotalPages] = useState(0);
+
+  const [pagina, setPagina] = useState(0);
+  const [tamañoPagina, setTamañoPagina] = useState(ITEMS_PER_PAGE);
+  const [cantidadPaginas, setCantidadPaginas] = useState(0);
+
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",
-  });
-  const [loading, setLoading] = useState(false);
+  }); // Se utiliza para el orden
+
+  const [cargando, setCargando] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    getDatos();
+    cargarServicios();
+    //console.log("Servicios actualizados:", servicios); // Agrega este log para verificar los datos
+  }, [pagina, tamañoPagina, consulta]);
 
-    console.log("Servicios actualizados:", servicios); // Agrega este log para verificar los datos
-  }, [page, pageSize, consulta]);
-
-  const getDatos = async () => {
-    setLoading(true);
+  const cargarServicios = async () => {
+    setCargando(true);
     setError(null);
     try {
-      const response = await obtenerServicios(consulta, page, pageSize);
+      const response = await obtenerServicios(consulta, pagina, tamañoPagina);
       setServicios(response.content);
-      setTotalPages(response.totalPages);
+      setCantidadPaginas(response.totalPages);
     } catch (err) {
-      setError("Error fetching items");
+      setError("Error al obtener servicios");
     } finally {
-      setLoading(false);
+      setCargando(false);
     }
   };
 
-  const handlePageChange = (newPage) => {
-    if (newPage >= 0 && newPage < totalPages) {
-      setPage(newPage);
+  const cambiarPagina = (newPage) => {
+    if (newPage >= 0 && newPage < cantidadPaginas) {
+      setPagina(newPage);
     }
   };
 
-  const handleConsultaChange = (e) => {
+  const cambiarConsulta = (e) => {
     setConsulta(e.target.value);
   };
 
-  const eliminar = async (id) => {
-    if (window.confirm("¿Estás seguro de que deseas eliminar este servicio?")) {
-      try {
-        const eliminacionExitosa = await eliminarServicio(id);
-        if (eliminacionExitosa) {
-          getDatos();
-        } else {
-          console.error("Error al eliminar servicio");
-        }
-      } catch (error) {
-        console.error("Error al eliminar la línea:", error);
-      }
+  // Función para editar un servicio. TO DO: Implementar edición en back
+  const editar = async (id) => {
+    if (window.confirm("¿Estás seguro de que deseas editar este servicio?")) {
+      alert("No se puede editar el servicio");
     }
   };
 
-  const handleSort = (key) => {
+  // Función para eliminar un servicio. TO DO: Implementar eliminación en back.
+  const eliminar = async (id) => {
+    if (window.confirm("¿Estás seguro de que deseas eliminar este servicio?")) {
+      alert("No se puede eliminar el servicio");
+
+      // Usar cuando se implemente la eliminación en back:
+      // try {
+      //   const eliminacionExitosa = await eliminarServicio(id);
+      //   if (eliminacionExitosa) {
+      //     cargarServicios();
+      //   } else {
+      //     console.error("Error al eliminar el servicio");
+      //   }
+      // } catch (error) {
+      //   console.error("Error al eliminar el servicio:", error);
+      // }
+    }
+  };
+
+  const filtrarPorAtributo = (key) => {
     let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
       direction = "descending";
@@ -73,7 +91,7 @@ export default function ListadoServicio() {
     setSortConfig({ key, direction });
   };
 
-  const sortedData = () => {
+  const serviciosFiltrados = () => {
     const sorted = [...servicios];
     if (sortConfig.key !== null) {
       sorted.sort((a, b) => {
@@ -105,12 +123,12 @@ export default function ListadoServicio() {
             type="search"
             placeholder="Buscar servicio"
             value={consulta}
-            onChange={handleConsultaChange}
+            onChange={cambiarConsulta}
           />
         </div>
         <div className="col-1">
           <button
-            onClick={() => getDatos()}
+            onClick={() => cargarServicios()}
             className="btn btn-outline-success"
           >
             Buscar
@@ -120,7 +138,7 @@ export default function ListadoServicio() {
 
       <hr />
 
-      {loading ? (
+      {cargando ? (
         <div className="text-center">Cargando...</div>
       ) : error ? (
         <div className="alert alert-danger">{error}</div>
@@ -129,7 +147,7 @@ export default function ListadoServicio() {
           <table className="table table-striped table-hover align-middle">
             <thead className="table-dark text-center">
               <tr>
-                <th scope="col" onClick={() => handleSort("id")}>
+                <th scope="col" onClick={() => filtrarPorAtributo("id")}>
                   #
                   {sortConfig.key === "id" && (
                     <span>
@@ -138,7 +156,7 @@ export default function ListadoServicio() {
                   )}
                 </th>
 
-                <th scope="col" onClick={() => handleSort("cliente")}>
+                <th scope="col" onClick={() => filtrarPorAtributo("cliente")}>
                   Cliente
                   {sortConfig.key === "cliente" && (
                     <span>
@@ -146,9 +164,17 @@ export default function ListadoServicio() {
                     </span>
                   )}
                 </th>
-                <th scope="col" onClick={() => handleSort("fecha")}>
+                <th scope="col" onClick={() => filtrarPorAtributo("fecha")}>
                   Fecha
                   {sortConfig.key === "fecha" && (
+                    <span>
+                      {sortConfig.direction === "ascending" ? " 🔽" : " 🔼"}
+                    </span>
+                  )}
+                </th>
+                <th scope="col" onClick={() => filtrarPorAtributo("total")}>
+                  Total
+                  {sortConfig.key === "total" && (
                     <span>
                       {sortConfig.direction === "ascending" ? " 🔽" : " 🔼"}
                     </span>
@@ -157,17 +183,17 @@ export default function ListadoServicio() {
                 <th scope="col">Acciones</th>
               </tr>
             </thead>
-            <tbody>
-              {sortedData().map((servicio, indice) => (
+            <tbody className="text-center">
+              {serviciosFiltrados().map((servicio, indice) => (
                 <tr key={indice}>
                   <th scope="row">{servicio.id}</th>
-
                   <td>{servicio.clienteRazonSocial}</td>
-                  <td>{servicio.fechaDocumento}</td>
-                  <td className="text-center">
-                    <div>
-                      <Link
-                        to={`/servicio/${servicio.id}`}
+                  <td>{formatearFecha(servicio.fechaDocumento)}</td>
+                  <td>{formatearPrecio(servicio.total)}</td>
+                  <td>
+                    <div className="d-flex justify-content-center">
+                      <button
+                        onClick={() => editar(servicio.id)}
                         className="btn btn-link btn-sm me-3"
                       >
                         <img
@@ -175,7 +201,7 @@ export default function ListadoServicio() {
                           style={{ width: "20px", height: "20px" }}
                         />
                         Editar
-                      </Link>
+                      </button>
                       <button
                         onClick={() => eliminar(servicio.id)}
                         className="btn btn-link btn-sm me-3"
@@ -197,15 +223,15 @@ export default function ListadoServicio() {
           <div className="d-md-flex justify-content-md-end">
             <button
               className="btn btn-outline-primary me-2"
-              disabled={page === 0}
-              onClick={() => handlePageChange(page - 1)}
+              disabled={pagina === 0}
+              onClick={() => cambiarPagina(pagina - 1)}
             >
               Anterior
             </button>
             <button
               className="btn btn-outline-primary"
-              disabled={page >= totalPages - 1}
-              onClick={() => handlePageChange(page + 1)}
+              disabled={pagina >= cantidadPaginas - 1}
+              onClick={() => cambiarPagina(pagina + 1)}
             >
               Siguiente
             </button>

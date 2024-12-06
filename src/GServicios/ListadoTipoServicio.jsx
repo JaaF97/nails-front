@@ -1,65 +1,75 @@
-import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IMAGEN_EDIT, IMAGEN_DELETE, ITEMS_PER_PAGE } from "../App.config";
-import { TipoServicioContext } from "./TipoServicioContext";
+import { TipoServicioContext } from "../Context/TipoServicioContext";
 import {
-  obtenerTiposServicios,
+  obtenerTiposServiciosPorPagina,
   eliminarTipoServicio,
 } from "../Services/TipoServicioService";
 
 export default function ListadoTipoServicio() {
+  let navegacion = useNavigate();
   const { tiposServicios, setTiposServicios } = useContext(TipoServicioContext);
 
   const [consulta, setConsulta] = useState("");
+
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(ITEMS_PER_PAGE);
   const [totalPages, setTotalPages] = useState(0);
+
   const [sortConfig, setSortConfig] = useState({
     key: null,
     direction: "ascending",
-  }); //se utiliza para el orden
+  }); // Se utiliza para el orden
 
   useEffect(() => {
-    console.log("entro ");
-    getDatos();
+    //console.log("entro ");
+    cargarTiposServicios();
   }, [page, pageSize, consulta]);
 
-  const handlePageChange = (newPage) => {
+  const cambiarPagina = (newPage) => {
     setPage(newPage);
   };
 
-  const getDatos = async () => {
-    console.log("carga " + page);
-    obtenerTiposServicios(consulta, page, pageSize)
+  const cargarTiposServicios = async () => {
+    //console.log("carga " + page);
+    obtenerTiposServiciosPorPagina(consulta, page, pageSize)
       .then((response) => {
         setTiposServicios(response.content);
         setTotalPages(response.totalPages);
       })
       .catch((error) => {
-        console.error("Error fetching items:", error);
+        console.error("Error al obtener tipos de servicio", error);
       });
   };
 
-  const handConsultaChange = (e) => {
+  const cambiarConsulta = (e) => {
     setConsulta(e.target.value);
   };
 
+  const editar = async (id) => {
+    if (
+      window.confirm(
+        "¿Estas seguro de que deseas editar este tipo de servicio?"
+      )
+    ) {
+      navegacion(`/tipoServicio/${id}`);
+    }
+  };
+
   const eliminar = async (id) => {
-    try {
-      const eliminacionExitosa = await eliminarTipoServicio(id);
-      if (eliminacionExitosa) {
-        getDatos();
-      } else {
-        console.error("Error al eliminar el tipo servicio");
-      }
-    } catch (error) {
-      console.error("Error al eliminar el tipo servicioss:", error);
+    if (
+      window.confirm(
+        "¿Estás seguro de que deseas eliminar este tipo de servicio?"
+      )
+    ) {
+      await eliminarTipoServicio(id);
+      cargarTiposServicios();
     }
   };
 
   ///////////////////////////////////////Para el orden de las tablas///////////////////////////////////////////////////
-  const handleSort = (key) => {
+  const filtrarPorAtributo = (key) => {
     let direction = "ascending";
     if (sortConfig.key === key && sortConfig.direction === "ascending") {
       direction = "descending";
@@ -67,7 +77,7 @@ export default function ListadoTipoServicio() {
     setSortConfig({ key, direction });
   };
 
-  const sortedData = () => {
+  const tipoServiciosFiltrados = () => {
     const sorted = [...tiposServicios];
     if (sortConfig.key !== null) {
       sorted.sort((a, b) => {
@@ -101,12 +111,12 @@ export default function ListadoTipoServicio() {
             type="search"
             aria-label="Search"
             value={consulta}
-            onChange={handConsultaChange}
+            onChange={cambiarConsulta}
           ></input>
         </div>
         <div className="col-1">
           <button
-            onClick={() => getDatos()}
+            onClick={() => cargarTiposServicios()}
             className="btn btn-outline-success"
             type="submit"
           >
@@ -118,7 +128,7 @@ export default function ListadoTipoServicio() {
       <table className="table table-striped table-hover align-middle">
         <thead className="table-dark text-center">
           <tr>
-            <th scope="col" onClick={() => handleSort("id")}>
+            <th scope="col" onClick={() => filtrarPorAtributo("id")}>
               #
               {sortConfig.key === "id" && (
                 <span>
@@ -126,7 +136,7 @@ export default function ListadoTipoServicio() {
                 </span>
               )}
             </th>
-            <th scope="col" onClick={() => handleSort("denominacion")}>
+            <th scope="col" onClick={() => filtrarPorAtributo("denominacion")}>
               Denominación
               {sortConfig.key === "denominacion" && (
                 <span>
@@ -140,16 +150,18 @@ export default function ListadoTipoServicio() {
         </thead>
         <tbody>
           {
-            //iteramos empleados
-            sortedData().map((tipoServicio, indice) => (
+            // Iteramos tipoServiciosFiltrados para mostrarlos en la tabla
+            tipoServiciosFiltrados().map((tipoServicio, indice) => (
               <tr key={indice}>
-                <th scope="row">{tipoServicio.id}</th>
-                <td>{tipoServicio.denominacion}</td>
+                <th scope="row" className="text-center">
+                  {tipoServicio.id}
+                </th>
+                <td className="text-center">{tipoServicio.denominacion}</td>
 
                 <td className="text-center">
                   <div>
-                    <Link
-                      to={`/tipoServicio/${tipoServicio.id}`}
+                    <button
+                      onClick={() => editar(tipoServicio.id)}
                       className="btn btn-link btn-sm me-3"
                     >
                       <img
@@ -157,7 +169,7 @@ export default function ListadoTipoServicio() {
                         style={{ width: "20px", height: "20px" }}
                       />
                       Editar
-                    </Link>
+                    </button>
 
                     <button
                       onClick={() => eliminar(tipoServicio.id)}
@@ -200,7 +212,7 @@ export default function ListadoTipoServicio() {
             href="#"
             onClick={(e) => {
               e.preventDefault(); // Previene el comportamiento predeterminado del enlace
-              handlePageChange(pageNumber);
+              cambiarPagina(pageNumber);
             }}
           >
             | {pageNumber} |

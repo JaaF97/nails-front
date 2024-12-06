@@ -1,8 +1,9 @@
 import axios from "axios";
 import { API_URL } from "../App.config";
 
-const urlBase = API_URL + "/articulosPageQuery";
+// Obtener una lista paginada de articulos
 export async function obtenerArticulosVenta(consulta, page, pageSize) {
+  const urlBase = API_URL + "/articulosPageQuery";
   try {
     const { data } = await axios({
       method: "GET",
@@ -10,11 +11,12 @@ export async function obtenerArticulosVenta(consulta, page, pageSize) {
     });
     return data;
   } catch (error) {
-    console.error("Error buscando articulos:", error);
+    console.error("Error al buscar articulos", error);
     throw error;
   }
 }
 
+// Obtener un articulo
 export async function obtenerArticuloVenta(id) {
   try {
     const { data } = await axios({
@@ -23,50 +25,48 @@ export async function obtenerArticuloVenta(id) {
     });
     return data;
   } catch (error) {
-    console.error("Error en buscar una articulo:", error);
+    console.error("Error al buscar un articulo", error);
     throw error;
   }
 }
 
-export async function newArticuloVenta(model) {
+// Crear/editar un articulo
+export async function crearArticuloVenta(articulo) {
   try {
-    if (model.id > 0) {
-      window.alert("entra por el put");
+    if (articulo.id > 0) {
+      //window.alert("entra por el put");
       const { data } = await axios({
         method: "PUT",
-        url: `${API_URL}/articulos/${model.id}`,
-        data: model,
+        url: `${API_URL}/articulos/${articulo.id}`,
+        data: articulo,
       });
+      return data;
     } else {
-      window.alert("entra por el post");
+      //window.alert("entra por el post");
       const { data } = await axios({
         method: "POST",
         url: `${API_URL}/articulos`,
-        data: model,
+        data: articulo,
       });
+      return data;
     }
-
-    return data;
-  } catch (e) {
-    //  console.error(e);
-    // if (e.response && e.response.status === 400) {
-    //     //setMensaje('Error: Los datos proporcionados son inválidos');
-    //     alert('Error: Los datos proporcionados son inválidos');
-    // }
-    // else {
-    //     alert(e.response);
-    //     alert(e.response.status);
-    //     // setMensaje('Error al conectarse con el servidor');
-    // }
-    return null;
+  } catch (error) {
+    console.error("Error al crear/editar el articulo", error);
+    throw error;
   }
 }
 
-export async function eliminarArticulosVenta(id) {
-  const urlBase = API_URL + "/articulosEliminar";
-  const { data } = await axios({
-    method: "PUT",
-    url: `${urlBase}/${id}`,
-  });
-  return true;
+// Eliminar un articulo
+export async function eliminarArticuloVenta(id) {
+  const urlBase = API_URL + "/articuloEliminar";
+  try {
+    const { data } = await axios({
+      method: "DELETE",
+      url: `${urlBase}/${id}`,
+    });
+    return data;
+  } catch (error) {
+    console.error("Error al eliminar el articulo", error);
+    throw error;
+  }
 }

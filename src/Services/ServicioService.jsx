@@ -1,10 +1,9 @@
 import axios from "axios";
 import { API_URL } from "../App.config";
 
-const urlBase = API_URL + "/serviciosPageQuery";
-
 // Obtener una lista paginada de servicios
 export async function obtenerServicios(consulta, page, pageSize) {
+  const urlBase = API_URL + "/serviciosPageQuery";
   try {
     const { data } = await axios({
       method: "GET",
@@ -12,7 +11,7 @@ export async function obtenerServicios(consulta, page, pageSize) {
     });
     return data;
   } catch (error) {
-    console.error("Error buscando servicios:", error);
+    console.error("Error al buscar servicios", error);
     throw error;
   }
 }
@@ -32,7 +31,7 @@ export async function obtenerServicio(id) {
 }
 
 // Crear o actualizar un servicio
-export async function newServicio(servicio) {
+export async function crearServicio(servicio) {
   try {
     if (servicio.id > 0) {
       const { data } = await axios({
@@ -50,21 +49,22 @@ export async function newServicio(servicio) {
       return data;
     }
   } catch (error) {
-    console.error("Error al guardar el servicio:", error);
+    console.error("Error al guardar el servicio", error);
     throw error;
   }
 }
 
 // Eliminar un servicio
 export async function eliminarServicio(id) {
+  const urlBase = API_URL + "/servicioEliminar";
   try {
     const { data } = await axios({
       method: "PUT",
-      url: `${API_URL}/servicioEliminar/${id}`,
+      url: `${urlBase}/${id}`,
     });
     return data;
   } catch (error) {
-    console.error("Error al eliminar el servicio:", error);
+    console.error("Error al eliminar el servicio", error);
     throw error;
   }
 }

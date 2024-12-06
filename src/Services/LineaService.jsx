@@ -1,7 +1,8 @@
 import axios from "axios";
 import { API_URL } from "../App.config";
 
-export async function obtenerLineas(consulta, page, pageSize) {
+// Obtener una lista paginada de lineas
+export async function obtenerLineasPorPagina(consulta, page, pageSize) {
   const urlBase = API_URL + "/lineasPageQuery";
   try {
     const { data } = await axios({
@@ -10,12 +11,13 @@ export async function obtenerLineas(consulta, page, pageSize) {
     });
     return data;
   } catch (error) {
-    console.error("Error buscando lineas:", error);
+    console.error("Error al buscar lineas:", error);
     throw error;
   }
 }
 
-export async function obtenerLineas2() {
+// Obtener todas las lineas
+export async function obtenerLineas() {
   try {
     const { data } = await axios({
       method: "GET",
@@ -23,11 +25,12 @@ export async function obtenerLineas2() {
     });
     return data;
   } catch (error) {
-    console.error("Error buscando lineas:", error);
+    console.error("Error al buscar lineas:", error);
     throw error;
   }
 }
 
+// Obtener una linea
 export async function obtenerLinea(id) {
   try {
     // `${urlBase}/${id}`
@@ -35,15 +38,16 @@ export async function obtenerLinea(id) {
       method: "GET",
       url: `${API_URL}/linea/${id}`,
     });
-    console.log(data);
+    //console.log(data);
     return data;
   } catch (error) {
-    console.error("Error en buscar una linea:", error);
+    console.error("Error al buscar una linea:", error);
     throw error;
   }
 }
 
-export async function newLinea(linea) {
+// Crear/editar una linea
+export async function crearLinea(linea) {
   try {
     if (linea.id > 0) {
       const { data } = await axios({
@@ -51,35 +55,32 @@ export async function newLinea(linea) {
         url: `${API_URL}/linea/${linea.id}`,
         data: linea,
       });
+      return data;
     } else {
       const { data } = await axios({
         method: "POST",
         url: `${API_URL}/linea`,
         data: linea,
       });
+      return data;
     }
-
-    return data;
-  } catch (e) {
-    //  console.error(e);
-    // if (e.response && e.response.status === 400) {
-    //     //setMensaje('Error: Los datos proporcionados son inválidos');
-    //     alert('Error: Los datos proporcionados son inválidos');
-    // }
-    // else {
-    //     alert(e.response);
-    //     alert(e.response.status);
-    //     // setMensaje('Error al conectarse con el servidor');
-    // }
-    return null;
+  } catch (error) {
+    console.error("Error al crear/editar la linea", error);
+    throw error;
   }
 }
 
-export async function eliminarLineas(id) {
+// Eliminar una linea
+export async function eliminarLinea(id) {
   const urlBase = API_URL + "/lineaEliminar";
-  const { data } = await axios({
-    method: "PUT",
-    url: `${urlBase}/${id}`,
-  });
-  return true;
+  try {
+    const { data } = await axios({
+      method: "PUT",
+      url: `${urlBase}/${id}`,
+    });
+    return data;
+  } catch (error) {
+    console.error("Error al eliminar la linea:", error);
+    throw error;
+  }
 }

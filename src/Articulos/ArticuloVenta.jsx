@@ -1,11 +1,10 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  newArticuloVenta,
+  crearArticuloVenta,
   obtenerArticuloVenta,
 } from "../Services/ArticuloVentaService";
-import { obtenerLineas2 } from "../Services/LineaService";
+import { obtenerLineas } from "../Services/LineaService";
 
 export default function ArticuloVenta({ title }) {
   let navegacion = useNavigate();
@@ -22,13 +21,13 @@ export default function ArticuloVenta({ title }) {
   const { denominacion, linea } = articulo;
 
   useEffect(() => {
-    cargarModel();
+    cargarArticulos();
     cargarLineas();
   }, []);
 
-  const cargarModel = async () => {
+  const cargarArticulos = async () => {
     if (id > 0) {
-      console.log(id);
+      //console.log(id);
       const resultado = await obtenerArticuloVenta(id);
       setArticulo(resultado);
       setSelectedLinea(resultado.linea);
@@ -36,26 +35,25 @@ export default function ArticuloVenta({ title }) {
   };
 
   const cargarLineas = async () => {
-    console.log(id);
-
-    const resultado = await obtenerLineas2();
+    //console.log(id);
+    const resultado = await obtenerLineas();
     setListaLineas(resultado);
   };
 
-  const onInputChange = ({ target: { name, value } }) => {
+  const alCambiarValor = ({ target: { name, value } }) => {
     //spread operator ... (expandir los atributos)
     setArticulo({ ...articulo, [name]: value });
   };
 
-  const onSubmit = async (e) => {
+  const registrarArticulo = async (e) => {
     e.preventDefault();
 
     const data = {
       ...articulo,
       linea: selectedLinea, // Asumiendo que la línea seleccionada es el id de la línea
     };
-    window.alert("id lina" + selectedLinea);
-    newArticuloVenta(data);
+    //window.alert("id linea" + selectedLinea);
+    crearArticuloVenta(data);
     // Redirigimos a la pagina de inicio
     navegacion("/articuloList");
   };
@@ -67,7 +65,7 @@ export default function ArticuloVenta({ title }) {
         <hr></hr>
       </div>
 
-      <form onSubmit={(e) => onSubmit(e)}>
+      <form onSubmit={(e) => registrarArticulo(e)}>
         <div className="mb-3">
           <label htmlFor="denominacion" className="form-label">
             {" "}
@@ -80,7 +78,7 @@ export default function ArticuloVenta({ title }) {
             name="denominacion"
             required={true}
             value={denominacion}
-            onChange={(e) => onInputChange(e)}
+            onChange={(e) => alCambiarValor(e)}
           />
 
           <label htmlFor="listaLineas">Selecciona una linea:</label>

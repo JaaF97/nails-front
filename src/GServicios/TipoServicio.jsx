@@ -1,8 +1,7 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  newTipoServicio,
+  crearTipoServicio,
   obtenerTipoServicio,
 } from "../Services/TipoServicioService";
 
@@ -18,25 +17,25 @@ export default function TipoServicio({ title }) {
   const { denominacion } = tipoServicio;
 
   useEffect(() => {
-    cargarModel();
+    cargarTiposServicios();
   }, []);
 
-  const cargarModel = async () => {
+  const cargarTiposServicios = async () => {
     if (id > 0) {
-      console.log(id);
+      //console.log(id);
       const resultado = await obtenerTipoServicio(id);
       setTipoServicio(resultado);
     }
   };
 
-  const onInputChange = ({ target: { name, value } }) => {
+  const alCambiarValor = ({ target: { name, value } }) => {
     //spread operator ... (expandir los atributos)
     setTipoServicio({ ...tipoServicio, [name]: value });
   };
 
-  const onSubmit = async (e) => {
+  const registrarTipoServicio = async (e) => {
     e.preventDefault();
-    newTipoServicio(tipoServicio);
+    crearTipoServicio(tipoServicio);
     // Redirigimos a la pagina de inicio
     navegacion("/tipoServicioList");
   };
@@ -48,7 +47,7 @@ export default function TipoServicio({ title }) {
         <hr></hr>
       </div>
 
-      <form onSubmit={(e) => onSubmit(e)}>
+      <form onSubmit={(e) => registrarTipoServicio(e)}>
         <div className="mb-3">
           <label htmlFor="denominacion" className="form-label">
             {" "}
@@ -61,7 +60,7 @@ export default function TipoServicio({ title }) {
             name="denominacion"
             required={true}
             value={denominacion}
-            onChange={(e) => onInputChange(e)}
+            onChange={(e) => alCambiarValor(e)}
           />
         </div>
 

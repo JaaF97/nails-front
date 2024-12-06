@@ -1,7 +1,8 @@
 import axios from "axios";
 import { API_URL } from "../App.config";
 
-export async function obtenerClientes(consulta, page, pageSize) {
+// Obtener una lista paginada de clientes
+export async function obtenerClientesPorPagina(consulta, page, pageSize) {
   const urlBase = API_URL + "/clientesPageQuery";
   try {
     const { data } = await axios({
@@ -10,12 +11,13 @@ export async function obtenerClientes(consulta, page, pageSize) {
     });
     return data;
   } catch (error) {
-    console.error("Error buscando clientes:", error);
+    console.error("Error al buscar clientes:", error);
     throw error;
   }
 }
 
-export async function obtenerClientesForCombo() {
+// Obtener una lista paginada de clientes
+export async function obtenerClientes() {
   const urlBase = API_URL + "/clientes";
   try {
     const { data } = await axios({
@@ -24,11 +26,12 @@ export async function obtenerClientesForCombo() {
     });
     return data;
   } catch (error) {
-    console.error("Error buscando clientes:", error);
+    console.error("Error al buscar clientes:", error);
     throw error;
   }
 }
 
+// Obtener un cliente
 export async function obtenerCliente(id) {
   try {
     const { data } = await axios({
@@ -38,48 +41,46 @@ export async function obtenerCliente(id) {
     console.log(data);
     return data;
   } catch (error) {
-    console.error("Error en buscar un cliente:", error);
+    console.error("Error al buscar un cliente:", error);
     throw error;
   }
 }
 
-export async function newCliente(cliente) {
+// Crear/editar un cliente
+export async function crearCliente(cliente) {
   try {
     if (cliente.id > 0) {
       const { data } = await axios({
         method: "PUT",
-        url: `${API_URL}/cliente/${cliente.id}`,
+        url: `${API_URL}/clientes/${cliente.id}`,
         data: cliente,
       });
+      return data;
     } else {
       const { data } = await axios({
         method: "POST",
-        url: `${API_URL}/cliente`,
+        url: `${API_URL}/clientes`,
         data: cliente,
       });
+      return data;
     }
-
-    return data;
-  } catch (e) {
-    //  console.error(e);
-    // if (e.response && e.response.status === 400) {
-    //     //setMensaje('Error: Los datos proporcionados son inválidos');
-    //     alert('Error: Los datos proporcionados son inválidos');
-    // }
-    // else {
-    //     alert(e.response);
-    //     alert(e.response.status);
-    //     // setMensaje('Error al conectarse con el servidor');
-    // }
-    return null;
+  } catch (error) {
+    console.error("Error al crear/editar el cliente", error);
+    throw error;
   }
 }
 
+// Eliminar un cliente
 export async function eliminarCliente(id) {
   const urlBase = API_URL + "/clienteEliminar";
-  const { data } = await axios({
-    method: "PUT",
-    url: `${urlBase}/${id}`,
-  });
-  return true;
+  try {
+    const { data } = await axios({
+      method: "PUT",
+      url: `${urlBase}/${id}`,
+    });
+    return data;
+  } catch (error) {
+    console.error("Error al eliminar el cliente", error);
+    throw error;
+  }
 }

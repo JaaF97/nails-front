@@ -136,7 +136,7 @@ export default function ListadoCliente() {
               )}
             </th>
             <th scope="col" onClick={() => filtrarClientes("celular")}>
-              Cel
+              Celular
               {sortConfig.key === "celular" && (
                 <span>
                   {sortConfig.direction === "ascending" ? " 🔽" : " 🔼"}

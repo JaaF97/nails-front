@@ -47,16 +47,24 @@ export default function ListadoTipoServicio() {
     setConsulta(e.target.value);
   };
 
+  const editar = async (id) => {
+    if (
+      window.confirm(
+        "¿Estas seguro de que deseas editar este tipo de servicio?"
+      )
+    ) {
+      navegacion(`/tipoServicio/${id}`);
+    }
+  };
+
   const eliminar = async (id) => {
-    try {
-      const eliminacionExitosa = await eliminarTipoServicio(id);
-      if (eliminacionExitosa) {
-        getDatos();
-      } else {
-        console.error("Error al eliminar el tipo servicio");
-      }
-    } catch (error) {
-      console.error("Error al eliminar el tipo servicioss:", error);
+    if (
+      window.confirm(
+        "¿Estás seguro de que deseas eliminar este tipo de servicio?"
+      )
+    ) {
+      await eliminarTipoServicio(id);
+      cargarTiposServicios();
     }
   };
 
@@ -150,8 +158,8 @@ export default function ListadoTipoServicio() {
 
                 <td className="text-center">
                   <div>
-                    <Link
-                      to={`/tipoServicio/${tipoServicio.id}`}
+                    <button
+                      onClick={() => editar(tipoServicio.id)}
                       className="btn btn-link btn-sm me-3"
                     >
                       <img
@@ -159,7 +167,7 @@ export default function ListadoTipoServicio() {
                         style={{ width: "20px", height: "20px" }}
                       />
                       Editar
-                    </Link>
+                    </button>
 
                     <button
                       onClick={() => eliminar(tipoServicio.id)}

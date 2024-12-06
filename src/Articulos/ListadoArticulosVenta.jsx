@@ -47,16 +47,16 @@ export default function ListadoArticulosVenta() {
     setConsulta(e.target.value);
   };
 
+  const editar = async (id) => {
+    if (window.confirm("¿Estas seguro de que deseas editar este articulo?")) {
+      navegacion(`/articulo/${id}`);
+    }
+  };
+
   const eliminar = async (id) => {
-    try {
-      const eliminacionExitosa = await eliminarArticulosVenta(id);
-      if (eliminacionExitosa) {
-        getDatos();
-      } else {
-        console.error("Error al eliminar el articulo");
-      }
-    } catch (error) {
-      console.error("Error al eliminar el articulo:", error);
+    if (window.confirm("¿Estás seguro de que deseas eliminar este articulo?")) {
+      await eliminarArticuloVenta(id);
+      cargarArticulos();
     }
   };
 
@@ -151,8 +151,8 @@ export default function ListadoArticulosVenta() {
 
                 <td className="text-center">
                   <div>
-                    <Link
-                      to={`/articulo/${articulo.id}`}
+                    <button
+                      onClick={() => editar(articulo.id)}
                       className="btn btn-link btn-sm me-3"
                     >
                       <img
@@ -160,7 +160,7 @@ export default function ListadoArticulosVenta() {
                         style={{ width: "20px", height: "20px" }}
                       />
                       Editar
-                    </Link>
+                    </button>
 
                     <button
                       onClick={() => eliminar(articulo.id)}

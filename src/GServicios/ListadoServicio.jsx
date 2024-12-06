@@ -57,18 +57,29 @@ export default function ListadoServicio() {
     setConsulta(e.target.value);
   };
 
+  // Función para editar un servicio. TO DO: Implementar edición en back
+  const editar = async (id) => {
+    if (window.confirm("¿Estás seguro de que deseas editar este servicio?")) {
+      alert("No se puede editar el servicio");
+    }
+  };
+
+  // Función para eliminar un servicio. TO DO: Implementar eliminación en back.
   const eliminar = async (id) => {
     if (window.confirm("¿Estás seguro de que deseas eliminar este servicio?")) {
-      try {
-        const eliminacionExitosa = await eliminarServicio(id);
-        if (eliminacionExitosa) {
-          getDatos();
-        } else {
-          console.error("Error al eliminar servicio");
-        }
-      } catch (error) {
-        console.error("Error al eliminar la línea:", error);
-      }
+      alert("No se puede eliminar el servicio");
+
+      // Usar cuando se implemente la eliminación en back:
+      // try {
+      //   const eliminacionExitosa = await eliminarServicio(id);
+      //   if (eliminacionExitosa) {
+      //     cargarServicios();
+      //   } else {
+      //     console.error("Error al eliminar el servicio");
+      //   }
+      // } catch (error) {
+      //   console.error("Error al eliminar el servicio:", error);
+      // }
     }
   };
 
@@ -168,13 +179,13 @@ export default function ListadoServicio() {
               {sortedData().map((servicio, indice) => (
                 <tr key={indice}>
                   <th scope="row">{servicio.id}</th>
-
                   <td>{servicio.clienteRazonSocial}</td>
-                  <td>{servicio.fechaDocumento}</td>
-                  <td className="text-center">
-                    <div>
-                      <Link
-                        to={`/servicio/${servicio.id}`}
+                  <td>{formatearFecha(servicio.fechaDocumento)}</td>
+                  <td>{formatearPrecio(servicio.total)}</td>
+                  <td>
+                    <div className="d-flex justify-content-center">
+                      <button
+                        onClick={() => editar(servicio.id)}
                         className="btn btn-link btn-sm me-3"
                       >
                         <img
@@ -182,7 +193,7 @@ export default function ListadoServicio() {
                           style={{ width: "20px", height: "20px" }}
                         />
                         Editar
-                      </Link>
+                      </button>
                       <button
                         onClick={() => eliminar(servicio.id)}
                         className="btn btn-link btn-sm me-3"

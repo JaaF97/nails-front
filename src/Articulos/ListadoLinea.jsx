@@ -46,16 +46,16 @@ export default function ListadoLinea() {
     setConsulta(e.target.value);
   };
 
+  const editar = async (id) => {
+    if (window.confirm("¿Estas seguro de que deseas editar esta linea?")) {
+      navegacion(`/linea/${id}`);
+    }
+  };
+
   const eliminar = async (id) => {
-    try {
-      const eliminacionExitosa = await eliminarLineas(id);
-      if (eliminacionExitosa) {
-        getDatos();
-      } else {
-        console.error("Error al eliminar la línea");
-      }
-    } catch (error) {
-      console.error("Error al eliminar la línea:", error);
+    if (window.confirm("¿Estás seguro de que deseas eliminar esta linea?")) {
+      await eliminarLinea(id);
+      cargarLineas();
     }
   };
 
@@ -139,7 +139,7 @@ export default function ListadoLinea() {
             <th scope="col">Acciones</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-center">
           {
             // Iteramos lineasFiltradas para mostrarlas en la tabla
             lineasFiltradas().map((linea, indice) => (
@@ -149,8 +149,8 @@ export default function ListadoLinea() {
 
                 <td className="text-center">
                   <div>
-                    <Link
-                      to={`/linea/${linea.id}`}
+                    <button
+                      onClick={() => editar(linea.id)}
                       className="btn btn-link btn-sm me-3"
                     >
                       <img
@@ -158,7 +158,7 @@ export default function ListadoLinea() {
                         style={{ width: "20px", height: "20px" }}
                       />
                       Editar
-                    </Link>
+                    </button>
 
                     <button
                       onClick={() => eliminar(linea.id)}

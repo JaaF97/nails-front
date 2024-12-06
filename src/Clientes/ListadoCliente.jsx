@@ -46,16 +46,16 @@ export default function ListadoCliente() {
     setConsulta(e.target.value);
   };
 
+  const editar = async (id) => {
+    if (window.confirm("¿Estas seguro de que deseas editar este cliente?")) {
+      navegacion(`/cliente/${id}`);
+    }
+  };
+
   const eliminar = async (id) => {
-    try {
-      const eliminacionExitosa = await eliminarCliente(id);
-      if (eliminacionExitosa) {
-        getDatos();
-      } else {
-        console.error("Error al eliminar el cliente");
-      }
-    } catch (error) {
-      console.error("Error al eliminar el cliente:", error);
+    if (window.confirm("¿Estás seguro de que deseas eliminar este cliente?")) {
+      await eliminarCliente(id);
+      cargarClientes();
     }
   };
 
@@ -166,12 +166,12 @@ export default function ListadoCliente() {
 
                 <td className="text-center">
                   <div>
-                    <Link
-                      to={`/cliente/${cliente.id}`}
+                    <button
+                      onClick={() => editar(cliente.id)}
                       className="btn btn-link btn-sm me-3"
                     >
                       Editar
-                    </Link>
+                    </button>
 
                     <button
                       onClick={() => eliminar(cliente.id)}

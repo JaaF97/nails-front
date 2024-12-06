@@ -1,34 +1,36 @@
 import axios from "axios";
 import { API_URL } from "../App.config";
 
-export async function obtenerTiposServicios(consulta, page, pageSize) {
+// Obtener una lista paginada de tipos de servicios
+export async function obtenerTiposServiciosPorPagina(consulta, page, pageSize) {
+  const urlBase = API_URL + "/tiposServiciosPageQuery";
   try {
-    const urlBase = API_URL + "/tiposServiciosPageQuery";
     const { data } = await axios({
       method: "GET",
       url: `${urlBase}?consulta=${consulta}&page=${page}&size=${pageSize}`,
     });
     return data;
   } catch (error) {
-    console.error("Error buscando tipos de servicios:", error);
+    console.error("Error al buscar tipos de servicios", error);
     throw error;
   }
 }
 
-export async function obtenerTiposServiciosForCombo() {
+// Obtener una lista de tipos de servicios
+export async function obtenerTiposServicios() {
   try {
-    const urlBase = API_URL + "/tiposServicios";
     const { data } = await axios({
       method: "GET",
-      url: `${urlBase}`,
+      url: `${API_URL}/tiposServicios`,
     });
     return data;
   } catch (error) {
-    console.error("Error buscando tipos de servicios:", error);
+    console.error("Error al buscar tipos de servicios", error);
     throw error;
   }
 }
 
+// Obtener un tipo de servicio
 export async function obtenerTipoServicio(id) {
   try {
     const { data } = await axios({
@@ -37,48 +39,46 @@ export async function obtenerTipoServicio(id) {
     });
     return data;
   } catch (error) {
-    console.error("Error en buscar un tipo servicio", error);
+    console.error("Error al buscar un tipo servicio", error);
     throw error;
   }
 }
 
-export async function newTipoServicio(tipoServicio) {
+// Crear o actualizar un tipo de servicio
+export async function crearTipoServicio(tipoServicio) {
   try {
     if (tipoServicio.id > 0) {
       const { data } = await axios({
         method: "PUT",
-        url: `${API_URL}/tipoServicios/${tipoServicio.id}`,
+        url: `${API_URL}/tiposServicios/${tipoServicio.id}`,
         data: tipoServicio,
       });
+      return data;
     } else {
       const { data } = await axios({
         method: "POST",
         url: `${API_URL}/tiposServicios`,
         data: tipoServicio,
       });
+      return data;
     }
-
-    return data;
-  } catch (e) {
-    //  console.error(e);
-    // if (e.response && e.response.status === 400) {
-    //     //setMensaje('Error: Los datos proporcionados son inválidos');
-    //     alert('Error: Los datos proporcionados son inválidos');
-    // }
-    // else {
-    //     alert(e.response);
-    //     alert(e.response.status);
-    //     // setMensaje('Error al conectarse con el servidor');
-    // }
-    return null;
+  } catch (error) {
+    console.error("Error al crear/editar el tipo de servicio", error);
+    throw error;
   }
 }
 
+// Eliminar un tipo de servicio
 export async function eliminarTipoServicio(id) {
   const urlBase = API_URL + "/tipoServicioEliminar";
-  const { data } = await axios({
-    method: "PUT",
-    url: `${urlBase}/${id}`,
-  });
-  return true;
+  try {
+    const { data } = await axios({
+      method: "PUT",
+      url: `${urlBase}/${id}`,
+    });
+    return data;
+  } catch (error) {
+    console.error("Error al eliminar el tipo de servicio", error);
+    throw error;
+  }
 }

@@ -170,6 +170,10 @@ export default function ListadoCliente() {
                       onClick={() => editar(cliente.id)}
                       className="btn btn-link btn-sm me-3"
                     >
+                      <img
+                        src={IMAGEN_EDIT}
+                        style={{ width: "20px", height: "20px" }}
+                      />
                       Editar
                     </button>
 
@@ -178,6 +182,10 @@ export default function ListadoCliente() {
                       className="btn btn-link btn-sm me-3"
                     >
                       {" "}
+                      <img
+                        src={IMAGEN_DELETE}
+                        style={{ width: "20px", height: "20px" }}
+                      />
                       Eliminar
                     </button>
                   </div>

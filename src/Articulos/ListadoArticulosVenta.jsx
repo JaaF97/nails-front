@@ -1,14 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import { IMAGEN_EDIT, IMAGEN_DELETE, ITEMS_PER_PAGE } from "../App.config";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
 import {
   obtenerArticulosVenta,
-  eliminarArticulosVenta,
+  eliminarArticuloVenta,
 } from "../Services/ArticuloVentaService";
 import { ArticuloVentaContext } from "../Context/ArticuloVentaContext";
 
 export default function ListadoArticulosVenta() {
+  let navegacion = useNavigate();
+
   const { articulos, setArticulos } = useContext(ArticuloVentaContext);
 
   const [consulta, setConsulta] = useState("");

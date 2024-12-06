@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { newLinea, obtenerLinea } from "../Services/LineaService";
+import { crearLinea, obtenerLinea } from "../Services/LineaService";
 
 export default function Linea({ title }) {
   let navegacion = useNavigate();

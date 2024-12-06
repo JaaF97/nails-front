@@ -173,14 +173,18 @@ export default function Servicio({ title }) {
       }));
     }
 
+    const listaItems = servicios.map((item) => ({
+      tipoServicioId: item.tipoServicioId,
+      precio: parseFloat(item.precio),
+      observaciones: item.observaciones || "",
+    }));
+
     const data = {
       ...servicio,
       fechaDocumento: fecha,
       cliente: selectedCliente,
-      listaItems: servicios.map((item) => ({
-        ...item,
-        tipoServicioId: item.tipoServicioId,
-      })),
+      total: totalServicio,
+      listaItems,
     };
 
     try {
@@ -234,57 +238,67 @@ export default function Servicio({ title }) {
         <label>Detalle del Servicio:</label>
         <hr />
 
-        <div className="container text-center">
-          <div className="row">
-            <div className="col">Tipo de Servicio</div>
-            <div className="col">Precio</div>
-            <div className="col">Observaciones</div>
-          </div>
-        </div>
-
-        {servicios.map((servicio, index) => (
-          <div key={index}>
-            <select
-              name="tipoServicio"
-              value={servicio.tipoServicioId || ""} // Aquí usas tipoServicioId
-              onChange={(e) => handleServicioChange(index, e)}
-            >
-              <option value="">Seleccione un tipo de servicio</option>
-              {tiposServicio.map((tipo) => (
-                <option key={tipo.id} value={tipo.id}>
-                  {tipo.denominacion}
-                </option> // El value es el ID
-              ))}
-            </select>
-            {errors.servicios[index]?.tipoServicio && (
-              <div className="error">
-                {errors.servicios[index].tipoServicio}
-              </div>
-            )}
-
-            <label>Precio:</label>
-            <input
-              type="number"
-              name="precio"
-              value={servicio.precio}
-              onChange={(e) => handleServicioChange(index, e)}
-            />
-            {errors.servicios[index]?.precio && (
-              <div className="error">{errors.servicios[index].precio}</div>
-            )}
-
-            <label>Observaciones:</label>
-            <input
-              type="text"
-              name="observaciones"
-              value={servicio.observaciones}
-              onChange={(e) => handleServicioChange(index, e)}
-            />
-            <button type="button" onClick={() => handleRemoveServicio(index)}>
-              Eliminar
-            </button>
-          </div>
-        ))}
+        <table className="table table-striped table-hover align-middle">
+          <thead className="table-dark text-center">
+            <tr>
+              <th>Tipo de Servicio</th>
+              <th>Precio</th>
+              <th>Observaciones</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {servicios.map((servicio, index) => (
+              <tr key={index}>
+                <td>
+                  <select
+                    name="tipoServicio"
+                    value={servicio.tipoServicioId || ""}
+                    onChange={(e) => cambiarServicio(index, e)}
+                  >
+                    <option value="">Seleccione un tipo de servicio</option>
+                    {tiposServicio.map((tipo) => (
+                      <option key={tipo.id} value={tipo.id}>
+                        {tipo.denominacion}
+                      </option>
+                    ))}
+                  </select>
+                  {errores.servicios[index]?.tipoServicio && (
+                    <div className="error">
+                      {errores.servicios[index].tipoServicio}
+                    </div>
+                  )}
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    name="precio"
+                    value={servicio.precioFormateado || ""}
+                    onChange={(e) => cambiarServicio(index, e)}
+                  />
+                  {errores.servicios[index]?.precio && (
+                    <div className="error">
+                      {errores.servicios[index].precio}
+                    </div>
+                  )}
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    name="observaciones"
+                    value={servicio.observaciones}
+                    onChange={(e) => cambiarServicio(index, e)}
+                  />
+                </td>
+                <td>
+                  <button type="button" onClick={() => quitarServicio(index)}>
+                    Eliminar
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
         <button type="button" onClick={agregarServicio}>
           Agregar Servicio
